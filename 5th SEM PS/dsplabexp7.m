@@ -1,0 +1,43 @@
+%EXP7
+%FIR FILTER DESIGN
+
+clc;
+clear all;
+close all;
+M=5;
+tau=(M-1)/2;
+n=0:M-1;
+Fc=1000;
+Ft=5000;
+wc=(2*pi*Fc)/Ft;
+hd=(sin(wc*(n-tau)))./(pi*(n-tau));
+hd(tau+1)=0.4;
+wrect=rectwin(M)';
+h=hd.*wrect;
+w=0:0.01:pi;
+Hw=freqz(h,1,w);
+MagHw=abs(Hw);
+HwdB=20*log10(MagHw/max(MagHw));
+subplot(221);
+stem(n,hd,'filled');
+axis([-1 M -0.15 0.5]);
+xlabel('n');
+ylabel('hd(n)');
+title('Ideal Impulse response');
+subplot(2,2,2);
+stem(n,wrect,'filled');
+axis([-1 M -0.1 1.2]);
+xlabel('n');
+ylabel('w(n)');
+title('rectangular window');
+subplot(2,2,3);
+stem(n,h,'filled');
+axis([-1 M -0.15 0.5]);
+xlabel('n');
+ylabel('h(n)');
+title('actual impulse response');
+subplot(2,2,4);
+plot(w/pi,HwdB);
+xlabel('Frequency in pi units');
+ylabel('dB');
+title('magnitude response');
