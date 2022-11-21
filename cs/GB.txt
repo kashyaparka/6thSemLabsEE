@@ -1,0 +1,594 @@
+                                             1(a)
+close all
+clear
+clc
+y0=[0 2]; %initial condition
+tspan=[0 20]; %time in seconds
+%The given constants are:
+omega=10/11;%in rad/s
+sigma=0.5;
+A=10/11;
+%assume y=y(1)
+% equation 1: dy(1)=y(2)
+%equation 2: dy(2) = -2*sigma*omega*y(2)-omega*omega*y(1)+omega*omega*u;
+odefun=@(t,y) [y(2) %1st ode
+-2*sigma*omega*y(2)-omega*omega*y(1)+omega*omega*A*sin(2*t)]; %2nd ode
+%solving the differential equation using ode45 subroutine
+[t,y]=ode45(odefun,tspan,y0);
+u=A*sin(2*t);
+plot(t,y(:,1),t,u);
+title('y(t),u(t) vs t');
+xlabel('time (s)','FontSize', 10,'FontName','Arial','FontWeight','bold');
+ylabel('y(t)','FontSize', 10,'FontName','Arial','FontWeight','bold');
+legend('y(t)','u(t)')
+grid on
+
+                                                1(b)
+clc
+clear all
+close all
+% equations: 
+% eq1: x(1)'= x(2)
+% eq2: x(2)'= -x(1)-x(2)
+y0=[1 1]; % initial condition
+tspan=[0 10]; % time in seconds
+odefun=@(t,x) [x(2) % 1st ode
+ -x(1)-x(2)]; % 2nd ode
+% solve
+[t,x]=ode45(odefun,tspan,y0);
+% plot (x1 vs t) and (x2 vs t)
+figure (1)
+plot(t,x(:,1),t,x(:,2));
+title('x1,x2 vs t');
+xlabel('time (s)','FontSize', 16,'FontName','Arial','FontWeight','bold');
+ylabel('x1,x2','FontSize', 16,'FontName','Arial','FontWeight','bold');
+legend('x(1)','x(2)')
+grid on
+figure (2)
+% plot x1 vs x2
+plot(x(:,1),x(:,2));
+title('x1 vs x2');
+xlabel('x1','FontSize', 16,'FontName','Arial','FontWeight','bold');
+ylabel('x2','FontSize', 16,'FontName','Arial','FontWeight','bold');
+grid on
+
+                                                     2(a)
+clc
+clear 
+close all
+% keeping wn constant and varying zeta
+wn=2; % frequency in rad/sec
+k=1; % unity gain
+zeta=[0 0.2 0.4 0.6 0.9 1]; % damping ratio 0<=zeta<=1
+for i=1:length(zeta)
+sys(i)=tf([k*wn^2],[1 2*zeta(i)*wn wn^2]);
+end
+figure (1) % step response
+step(sys(1),sys(2),sys(3),sys(4),sys(5),sys(6));
+grid on
+legend('\zeta=0','\zeta=0.2','\zeta=0.4','\zeta=0.6','\zeta=0.8','\zeta=1');
+xlabel('Damping ratio (\zeta)');
+ylabel('y (response)');
+title('step response for different damping ratio' );
+axis([0 10 -0.2 2.2]);
+zeta=linspace(0,1,100); % varying damping ratio from 0 to 1
+for i=1:length(zeta)
+sys=tf(k*wn^2,[1 2*zeta(i)*wn wn^2]); %system transfer function
+responsedata=stepinfo(sys);
+tr(i)=responsedata.RiseTime;
+tp(i)=responsedata.PeakTime;
+Mp(i)=responsedata.Overshoot;
+ts(i)=responsedata.SettlingTime;
+end
+figure ('Name','Time Domain analysis of a standard 2nd order LTI system' )
+subplot(221);
+plot(zeta,tr); xlabel('Damping ratio (\zeta)'); ylabel('Rise time(t_r)'); 
+grid on;
+subplot(222);
+plot(zeta,tp); xlabel('Damping ratio (\zeta)'); ylabel('Peak time (t_p)');
+grid on;
+subplot(223);
+plot(zeta,Mp); xlabel('Damping ratio (\zeta'); ylabel('Peak overshoot (M_p)'); 
+grid on;
+subplot(224)
+plot(zeta,ts); xlabel('Damping ratio(\zeta)'); ylabel('Settling time(t_s)'); 
+grid on;
+                                                      2(b) 
+clc
+clear 
+close all
+% keeping wn constant and varying zeta
+wn=2; % frequency in rad/sec
+k=1; % unity gain
+zeta=[0 0.2 0.4 0.6 0.9 1]; % damping ratio 0<=zeta<=1
+for i=1:length(zeta)
+sys(i)=tf([k*wn^2],[1 2*zeta(i)*wn wn^2]);
+end
+figure (1) % step response
+step(sys(1),sys(2),sys(3),sys(4),sys(5),sys(6));
+grid on
+legend('\zeta=0','\zeta=0.2','\zeta=0.4','\zeta=0.6','\zeta=0.8','\zeta=1');
+xlabel('Damping ratio (\zeta)');
+ylabel('y (response)');
+title('step response for different damping ratio' );
+axis([0 10 -0.2 2.2]);
+zeta=linspace(0,1,100); % varying damping ratio from 0 to 1
+for i=1:length(zeta)
+sys=tf(k*wn^2,[1 2*zeta(i)*wn wn^2]); %system transfer function
+responsedata=stepinfo(sys);
+tr(i)=responsedata.RiseTime;
+tp(i)=responsedata.PeakTime;
+Mp(i)=responsedata.Overshoot;
+ts(i)=responsedata.SettlingTime;
+end
+figure ('Name','Time Domain analysis of a standard 2nd order LTI system' )
+subplot(221);
+plot(zeta,tr); xlabel('Damping ratio (\zeta)'); ylabel('Rise time(t_r)'); 
+grid on;
+subplot(222);
+plot(zeta,tp); xlabel('Damping ratio (\zeta)'); ylabel('Peak time (t_p)');
+grid on;
+subplot(223);
+plot(zeta,Mp); xlabel('Damping ratio (\zeta'); ylabel('Peak overshoot (M_p)'); 
+grid on;
+subplot(224)
+plot(zeta,ts); xlabel('Damping ratio(\zeta)'); ylabel('Settling time(t_s)'); 
+grid on; 
+ 
+                                                     3
+clc
+clear all
+close all
+%Q1.When R(s) is a unit step input:
+num=[1];%it represents zeroes of the trasfer function
+den=[1 8 7 1];%it represents poles of the trasfer function
+Ts=tf(num,den);%Ts is the transfer function
+figure(1)
+subplot(1,2,1);
+step(num,den);%Getting the Step Response
+subplot(1,2,2);
+pzmap(Ts);%Plotting the pole-zero map
+grid on;
+%Q2 When D(s)=11
+num1=[5];%it represents zeroes of the trasfer function
+den1=[1 8 7 11];%it represents poles of the trasfer function
+Ts1=tf(num1,den1);%Ts is the transfer function
+figure(2)
+subplot(1,2,1);
+step(num1,den1);%Getting the Step Response
+subplot(1,2,2);
+pzmap(Ts1);%Plotting the pole-zero map
+grid on;
+%Q3:Effect of addition of zeroes
+oltf=zpk([],[0,-1,-7],[1]);%open loop transfer function
+clorg=feedback(oltf,1);
+%step response with different loctaions of zero
+zs=[0.2 1 2 5 10 20];
+for k=1:length(zs)
+clsys(k)=feedback(oltf*tf([1 zs(k)],[zs(k)]),1);
+end
+figure(3)
+subplot(1,2,1);
+step(clorg,'k--',clsys(1),clsys(2),clsys(3),clsys(4),clsys(5),clsys(6));
+grid on
+legend('Original System','z=0.5','z=1','z=2','z=5','z=10','z=20');
+axis([0 60 0 1.2]);
+subplot(1,2,2);
+pzmap(clorg,'k--',clsys(1),clsys(2),clsys(3),clsys(4),clsys(5),clsys(6));
+grid on
+%Q4 Effect of addition of poles
+ps=[0.2 1 2 5 10 20];
+for k=1:length(ps)
+clsyspp(k)=feedback(oltf*tf([1 ps(k)],[ps(k)]),1);
+end
+figure(4)
+subplot(1,2,1);
+step(clorg,'k--
+',clsyspp(1),clsyspp(2),clsyspp(3),clsyspp(4),clsyspp(5),clsyspp(6));
+grid on
+legend('Original System','p=0.2','p=1','p=2','p=5','p=10','p=20');
+axis([0 60 0 1.2]);
+subplot(1,2,2);
+pzmap(clorg,'k--
+',clsyspp(1),clsyspp(2),clsyspp(3),clsyspp(4),clsyspp(5),clsyspp(6));
+grid on
+%Q5 Effect of additon of delays
+tds=[0.1 0.5 1 1.5];
+for k=1:length(tds)
+clsystds(k)=feedback(oltf*tf([1],[1],'InputDelay',tds(k)),1);
+end
+figure(5)
+step(clorg,'k--',clsystds(1),clsystds(2),clsystds(3),clsystds(4));
+grid on
+legend('Original System','td=0.1','td=0.5','td=1','td=1.5');
+
+                                                       4
+clc
+clear all
+close all
+%quetsion 1 kd=ki=0
+kp=[1 2 3 4 5];
+Gs=tf([1],[1 2 4]);%Ts is the transfer function
+for i=1:length(kp)
+ Ds=pid(kp(i),0, 0);
+ y=Gs*Ds;
+ gcl(i)=feedback(y,1);
+ stepinfo(gcl(i));
+end
+figure(1)
+step(gcl(1),gcl(2),gcl(3),gcl(4),gcl(5));%Getting the Step Response
+legend('Kp=1','Kp=2', 'Kp=3', 'Kp=4','Kp=5','Location','Best');
+grid on;
+xlabel('Time');
+ylabel('Step Response');
+title('Step Response vs Time');
+%quetsion 2 kp=2,kd=0
+ki=[1 2 3 4 5];
+for i=1:length(ki)
+ Ds1=pid(2, ki(i), 0);
+ y1=Gs*Ds1;
+ gcls(i)=feedback(y1,1);
+ stepinfo(gcls(i));
+end
+figure(2)
+step(gcls(1),gcls(2),gcls(3),gcls(4),gcls(5));%Getting the Step Response
+legend('Ki=1','Ki=2', 'Ki=3', 'Ki=4','Ki=5','Location','Best');
+grid on;
+xlabel('Time');
+ylabel('Step Response');
+title('Step Response vs Time');
+%quetsion 3 kp=4,ki=5
+kd=[1 2 3 4 5];
+for i=1:length(kd)
+ Ds2=pid(4,5,kd(i));
+ y2=Gs*Ds2;
+ gclss(i)=feedback(y2,1);
+ stepinfo(gclss(i));
+end
+figure(3)
+step(gclss(1),gclss(2),gclss(3),gclss(4),gclss(5));%Getting the Step Response
+legend('Kd=1','Kd=2', 'Kd=3', 'Kd=4','Kd=5','Location','Best');
+grid on;
+xlabel('Time');
+ylabel('Step Response');
+title('Step Response vs Time');
+
+                                                                  5
+clc
+clear all
+close all
+gs=zpk([],[-1 -2 -3],[5]);% Creating the Open loop transfer function
+figure(1) %Create figure window.
+step(gs); %getting step response of the system
+hold on %holding on the plot
+title('Step Response for G(s)')%giving title to the plot
+[y,t] = step(gs); %initializing a matrix for step response G(s)
+hs = mean(diff(t));
+dy = gradient(y, hs); % Numerical 
+Derivative
+[~,idx] = max(dy); % Index Of Maximum
+b = [t([idx-1,idx+1]) ones(2,1)] \ y([idx-1,idx+1]); % Regression Line 
+Around Maximum Derivative
+tv = [-b(2)/b(1); (1-b(2))/b(1)]; % Independent 
+Variable Range For Tangent Line Plot
+f = [tv ones(2,1)] * b; % Calculate 
+Tangent Line
+plot(tv, f, '-r') % Tangent Line
+hold on 
+plot(t(idx), y(idx), 'or') % Maximum Vertical
+hold on
+grid on
+L=tv(1) %defining Dead time (L)
+T=tv(2)-tv(1) %defining Reaction time (T)
+plot(L,'LineWidth',3);
+hold on
+plot(T,'LineWidth',3);
+legend('Original step response','Tangent at point of inflection','Point of 
+Inflection','Location','Best');
+figure(2)
+disp('for P control')
+kp=T/L;%calculating Kp
+ti=inf;%calculating Ti
+td=0;%calculating Td
+d=pid(kp,kp/ti,kp*td);%calculating D(s)
+hs=feedback(gs*d,1);%finding overall T.F. with unity feedback
+step(hs);%plotting step response of H
+hold on
+fprintf('Kp=%f Ti=%f Td=%d\n\n',kp,ti,td);%displaying values to command window
+disp(' for PI control')
+kp=0.9*T/L;%calculating Kp
+ti=L/0.3;%calculating Ti
+td=0;%calculating Td
+d=pid(kp,kp/ti,kp*td);%calculating D(s)
+hs=feedback(gs*d,1);%finding overall T.F. with unity feedback
+step(hs);%plotting step response of H
+hold on
+fprintf('Kp=%f Ti=%f Td=%d\n\n',kp,ti,td);%displaying values to command window
+disp('for PID control')
+kp=1.2*T/L;%calculating Kp
+ti=2*L;%calculating Ti
+td=0.5*L;%calculating Td
+d=pid(kp,kp/ti,kp*td);%calculating D(s)
+hs=feedback(gs*d,1);%finding overall T.F. with unity feedback
+step(hs);%plotting step response of H
+grid on
+fprintf('Kp=%f Ti=%f Td=%f\n\n',kp,ti,td)%displaying values to command window
+title('ZN O/L Method for tuning D(s)')
+legend('P control ','PI control ','PID control ')
+clc
+close all
+clear all
+G=zpk([],[-1 -2 -3],[5]);% Creating the Open loop transfer function
+H=feedback(G,1);%overall T.F with unity feedback
+Kp=[5 12 17];%defining values of Kp
+for td=1:3%for loop for various values of Kp
+D=Kp(td);%defining D(s)
+figure
+H1(td)=feedback(G*D,1);%defining the unity feedback loop
+step(H1(td));
+grid on
+title(['Step response for Kp']);
+end
+clc
+close all
+clear all
+gs=zpk([],[-1 -2 -3],[5]);
+hs=feedback(gs,1);%overall T.F with unity feedback
+e=[1 6 11 66];%characteristic equation in s
+j=sqrt(-1);%defining j
+s=roots(e);%finding roots of characteristic eqn
+w=s/j;%finding angular frequency
+t=(2*pi)/w(2);%finding time period
+tc=abs(t)
+kc=12 %sustained oscillations at Kc=12
+d=kc;%calculating D(s)
+h1=feedback(gs*d,1);%finding overall T.F. with unity feedback
+step(h1);%step response for transfer function when Kp=12
+disp('for P control')
+kp1=0.5*kc;%Z-L C/L tuning
+ti1=inf;%Z-L C/L tuning
+td1=0;%Z-L C/L tuning
+d1=pid(kp1,kp1/ti1,kp1*td1);%calculating D(s)
+h1s=feedback(gs*d1,1);%finding overall T.F. with unity feedback
+fprintf('Kp1=%f Ti1=%f Td=%d\n\n',kp1,ti1,td1);%displaying values to command 
+window
+disp(' for PI control')
+kp2=0.45*kc;%Z-L C/L tuning
+ti2=(1/1.2)*tc;%Z-L C/L tuning
+td2=0;%Z-L C/L tuning
+d2=pid(kp2,kp2/ti2,kp2*td2);%calculating D(s)
+h2s=feedback(gs*d2,1);%finding overall T.F. with unity feedback
+fprintf('Kp2=%f Ti2=%f Td2=%d\n\n',kp2,ti2,td2);%displaying values to command 
+window
+disp('for PID control')
+kp3=0.6*kc;%Z-L C/L tuning
+ti3=0.5*tc;%Z-L C/L tuning
+td3=0.125*tc;%Z-L C/L tuning
+d3=pid(kp3,kp3/ti3,kp3*td3);%calculating D(s)
+h3s=feedback(gs*d3,1);%finding overall T.F. with unity feedback
+step(hs,h1s,h2s,h3s);%plotting step response of H
+fprintf('Kp3=%f Ti3=%f Td3=%f\n\n',kp3,ti3,td3)%displaying values to command 
+window
+grid on
+title('ZN C/L Method for tuning D(s)')
+legend('Original System','P control','PI control','PID control');
+
+                                                           6
+clc
+clear all
+close all
+
+s=tf('s');
+
+figure
+G=(1/(s+1));
+rlocus(G);
+grid on;
+
+figure
+G=(1/((s+1)*(s+2)));
+rlocus(G);
+grid on;
+
+figure
+G=(1/((s+1)*(s+2)*(s+3)));
+rlocus(G);
+grid on;
+
+figure
+G=(1/(s*(s+1)*(s+2)));
+rlocus(G);
+grid on;
+
+figure
+G=((s+0.5)/(s*(s+1)*(s+2)));
+rlocus(G);
+grid on;
+
+figure
+G=((s+4)/(s*(s+1)*(s+2)));
+rlocus(G);
+grid on;
+
+figure
+G=((s-4)/((s+1)*(s+2)*(s+3)));
+rlocus(G);
+grid on;
+
+figure
+G=(1/s);
+rlocus(G);
+grid on;
+
+figure
+G=(1/(s*s));
+rlocus(G);
+grid on;
+
+figure
+G=((s+3)/(s*s));
+rlocus(G);
+grid on;
+
+figure
+G=((s+1)/((s*s)*(s+9)));
+rlocus(G);
+grid on;
+
+figure
+G=(1/(s*(s*s+2*s+2)));
+rlocus(G);
+grid on;
+
+figure
+G=(1/(s*(s*s+4*s+5)));
+rlocus(G);
+grid on;
+
+figure
+G=(1/(s*(s*s+6*s+12)));
+rlocus(G);
+grid on;
+
+figure
+G=(1/(s*(s+3)*(s*s+2*s+2)));
+rlocus(G);
+grid on;
+
+figure
+G=(1/(s*(s+2)*(s*s+2*s+5)));
+rlocus(G);
+grid on;
+
+figure
+G=((s+1)/(s*(s-3)));
+rlocus(G);
+grid on;
+
+figure
+G=((s*s+2*s+4)/(s*s*(s+2)*(s+1)));
+rlocus(G);
+grid on;
+
+                                                                     7
+clc
+clear all
+close all
+
+s=tf('s');
+
+G1=(1/s);
+G2=(1/(s+2));
+G3=(1/((s+1)*(s+2)));
+G4=(100/(s*s+2*s+10));
+G5=(1/(s*(s+1)*(s+2)));
+G6=((s+3)/(s*(s+1)*(s+2)));
+G7=(100/(s*(s+2)*(s*s+4)));
+G8=(10/(s*s*(s+2)));
+G9=(10*(s-1)/(s*(s+2)));
+G10=(68/(s*(s+2)*(s*s+2*s+17)));
+
+figure
+bode(G1)
+grid on
+
+figure
+bode(G2)
+grid on
+
+figure
+bode(G3)
+grid on
+
+
+figure
+bode(G4)
+grid on
+
+figure
+bode(G5)
+grid on
+
+figure
+bode(G6)
+grid on
+
+figure
+bode(G7)
+grid on
+
+figure
+bode(G8)
+grid on
+
+figure
+bode(G9)
+grid on
+
+figure
+bode(G10)
+grid on
+
+figure
+nyquist(G1);
+
+figure
+nyquist(G2);
+
+figure
+nyquist(G3);
+
+figure
+nyquist(G4);
+
+figure
+nyquist(G5);
+
+figure
+nyquist(G6);
+
+figure
+nyquist(G7);
+
+figure
+nyquist(G8);
+
+figure
+nyquist(G9);
+
+figure
+nyquist(G10);
+
+                                                                     9
+clc
+clear all
+close all
+
+g = zpk([],[0 -1], [1]);
+%calculated zeta and wn from Mp and ts
+zeta = 0.456;
+wn = 2.19;
+
+%calculated dominated pole compensated system
+pd = (-zeta*wn)+(j*wn*sqrt(1-zeta^2))
+
+p = [0 1];
+
+%calculated angle defficiency
+phi = -180 + sum(angle(p+pd)*(180/pi))
+
+%angle contributed by pole
+pole_angle = angle(p(1)+pd)*180/(2*pi)-phi/2;
+
+%angle contributed by zero
+zero_angle = angle(p(1)+pd)*180/(2*pi)+phi/2;
+
+
+Pc = wn*sqrt(1-zeta^2)/tand(pole_angle) + zeta*wn;
+Zc = wn*sqrt(1-zeta^2)/tand(zero_angle) + zeta*wn; 
+
+Kc = abs((pd+Pc)*pd*(pd+1)/(1*(pd+Zc)));
+
+gcs = zpk(-Zc,-Pc,Kc)
+new_gs = gcs*g
+rlocus(new_gs);
